@@ -20,8 +20,12 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   onClearFilters,
 }) => {
   const [search, setSearch] = useState(filters.search || '');
-  const [minPrice, setMinPrice] = useState(filters.minPrice?.toString() || '');
-  const [maxPrice, setMaxPrice] = useState(filters.maxPrice?.toString() || '');
+  const [minPrice, setMinPrice] = useState(
+    filters.minPrice !== undefined ? filters.minPrice.toString() : ''
+  );
+  const [maxPrice, setMaxPrice] = useState(
+    filters.maxPrice !== undefined ? filters.maxPrice.toString() : ''
+  );
 
   const handleSearch = (text: string) => {
     setSearch(text);
@@ -30,27 +34,27 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
   const handleMinPriceChange = (text: string) => {
     setMinPrice(text);
-    const value = text ? parseFloat(text) : undefined;
+    const value = text ? parseFloat(text) : '';
     onFilterChange({ ...filters, minPrice: value });
   };
 
   const handleMaxPriceChange = (text: string) => {
     setMaxPrice(text);
-    const value = text ? parseFloat(text) : undefined;
+    const value = text ? parseFloat(text) : '';
     onFilterChange({ ...filters, maxPrice: value });
   };
 
   const handleCategorySelect = (category: ProductCategory) => {
     onFilterChange({
       ...filters,
-      category: filters.category === category ? undefined : category,
+      category: filters.category === category ? '' : category,
     });
   };
 
   const handleTeamSelect = (team: string) => {
     onFilterChange({
       ...filters,
-      team: filters.team === team ? undefined : team,
+      team: filters.team === team ? '' : team,
     });
   };
 
@@ -93,8 +97,8 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
       >
         {categories.map(category => (
           <Button
-            key={category.id}
-            title={category.name}
+            key={String(category.id)}
+            title={String(category.name)}
             type={filters.category === category.id ? 'solid' : 'outline'}
             onPress={() => handleCategorySelect(category.id)}
             containerStyle={styles.categoryButton}

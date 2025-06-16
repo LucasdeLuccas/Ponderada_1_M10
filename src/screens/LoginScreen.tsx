@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input, Button, ErrorMessage, Loading } from '@/components';
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES } from '@/constants';
@@ -31,7 +32,7 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <Input
         placeholder="E-mail"
         keyboardType="email-address"
@@ -57,7 +58,7 @@ export const LoginScreen: React.FC = () => {
       <TouchableOpacity onPress={handleRegister} disabled={loading}>
         <Text style={styles.link}>Criar conta</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 

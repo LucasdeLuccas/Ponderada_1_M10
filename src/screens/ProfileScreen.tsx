@@ -4,6 +4,7 @@ import { Button, ErrorMessage } from '@/components';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { theme } from '@/styles/theme';
 import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const ProfileScreen: React.FC = () => {
   const { user, signOut, loading, error, updateProfile } = useAuthContext();
@@ -38,7 +39,7 @@ export const ProfileScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <TouchableOpacity onPress={handleSelectImage} style={styles.avatarContainer}>
         {avatar ? (
           <Image source={{ uri: avatar }} style={styles.avatar} />
@@ -63,7 +64,7 @@ export const ProfileScreen: React.FC = () => {
         disabled={loading}
         containerStyle={styles.signOutButton}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

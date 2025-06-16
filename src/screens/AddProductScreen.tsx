@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Text } from 'react-native';
 import { Input, Button, ErrorMessage } from '@/components';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { ROUTES } from '@/constants';
 import { theme } from '@/styles/theme';
 import * as ImagePicker from 'expo-image-picker';
-import { ProductCategory, ProductCondition } from '@/types';
+import { ProductCategory, ProductCondition, Product } from '@/types';
+import * as Notifications from 'expo-notifications';
 
 const categories = Object.values(ProductCategory);
 const conditions = Object.values(ProductCondition);
 
 export const AddProductScreen: React.FC = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const params = route.params as { onGoBack?: (product: Product) => void };
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -51,15 +54,40 @@ export const AddProductScreen: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Validação básica
       if (!name || !description || !price || !team || !stock || !image) {
         setError('Preencha todos os campos');
         return;
       }
 
-      // Aqui você implementaria a lógica para salvar o produto
-      // Por enquanto, apenas simulamos um delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simular criação do produto
+      const newProduct: Product = {
+        id: String(Date.now()),
+        name,
+        description,
+        price: parseFloat(price),
+        category,
+        team,
+        image,
+        images: [image],
+        stock: parseInt(stock, 10),
+        condition: ProductCondition.NEW,
+        seller: { id: 'local', name: 'Você', rating: 5 },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (params?.onGoBack) {
+        params.onGoBack(newProduct);
+      }
+
+      // Notificação local
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Produto adicionado!',
+          body: `O produto "${name}" foi adicionado com sucesso!`,
+        },
+        trigger: null,
+      });
 
       navigation.goBack();
     } catch (err) {
@@ -86,7 +114,7 @@ export const AddProductScreen: React.FC = () => {
         placeholder="Nome do produto"
         value={name}
         onChangeText={setName}
-        leftIcon={{ name: 'shopping', type: 'material' }}
+        leftIcon={{ name: 'shopping-cart', type: 'material' }}
       />
       <Input
         placeholder="Descrição"
@@ -114,7 +142,7 @@ export const AddProductScreen: React.FC = () => {
         value={stock}
         onChangeText={setStock}
         keyboardType="numeric"
-        leftIcon={{ name: 'inventory', type: 'material' }}
+        leftIcon={{ name: 'inventory-2', type: 'material' }}
       />
 
       <Text style={styles.label}>Categoria</Text>

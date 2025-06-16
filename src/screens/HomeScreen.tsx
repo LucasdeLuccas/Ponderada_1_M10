@@ -9,12 +9,16 @@ import { ProductFilters } from '../components/ProductFilters';
 import { Card } from '../components/Card';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { theme } from '../styles/theme';
+import { Product, ProductCategory } from '../types';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<MainStackParamList, 'Home'>;
 
 export const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [showFilters, setShowFilters] = useState(false);
+  const [tab, setTab] = useState<'all' | 'my'>('all');
+  const [myProducts, setMyProducts] = useState<Product[]>([]);
 
   const {
     products,
@@ -30,25 +34,35 @@ export const HomeScreen = () => {
     onClearFilters,
   } = useProducts();
 
+  // Ajustar categorias e times para o formato esperado pelo ProductFilters
+  const filterCategories = categories.map(cat => ({
+    id: cat.id as ProductCategory,
+    name: String(cat.name),
+  }));
+  const filterTeams = teams.map(team => String(team));
+
   const handleProductPress = (productId: string) => {
     navigation.navigate('ProductDetails', { productId });
   };
 
   const handleAddProduct = () => {
-    navigation.navigate('AddProduct');
+    navigation.navigate('AddProduct', {
+      onGoBack: (newProduct: Product) => {
+        setMyProducts(prev => [newProduct, ...prev]);
+        setTab('my');
+      },
+    });
   };
 
-  const renderProduct = ({ item }: { item: any }) => (
+  const renderItem = ({ item }: { item: Product }) => (
     <Card
+      key={item.id}
       title={item.name}
       image={item.image}
-      onPress={() => handleProductPress(item.id)}
-      containerStyle={styles.card}
+      onPress={() => navigation.navigate('ProductDetails', { productId: item.id })}
     >
-      <View style={styles.cardContent}>
-        <Text style={styles.price}>R$ {item.price.toFixed(2)}</Text>
-        <Text style={styles.category}>{item.category}</Text>
-      </View>
+      <Text>{item.description}</Text>
+      <Text>R$ {item.price.toFixed(2)}</Text>
     </Card>
   );
 
@@ -66,7 +80,7 @@ export const HomeScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <Text style={styles.title}>FutStore</Text>
         <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={styles.filterButton}>
@@ -79,10 +93,26 @@ export const HomeScreen = () => {
         </TouchableOpacity>
       </View>
 
+      <View
+        style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: theme.spacing.md }}
+      >
+        <Button
+          title="Todos"
+          type={tab === 'all' ? 'solid' : 'outline'}
+          onPress={() => setTab('all')}
+          containerStyle={{ marginRight: theme.spacing.sm }}
+        />
+        <Button
+          title="Meus Produtos"
+          type={tab === 'my' ? 'solid' : 'outline'}
+          onPress={() => setTab('my')}
+        />
+      </View>
+
       {showFilters && (
         <ProductFilters
-          categories={categories}
-          teams={teams}
+          categories={filterCategories}
+          teams={filterTeams}
           filters={filters}
           onFilterChange={onFilterChange}
           onClearFilters={onClearFilters}
@@ -90,13 +120,13 @@ export const HomeScreen = () => {
       )}
 
       <FlatList
-        data={products}
-        renderItem={renderProduct}
-        keyExtractor={item => item.id}
+        data={tab === 'all' ? products : myProducts}
+        keyExtractor={item => String(item.id)}
+        renderItem={renderItem}
         contentContainerStyle={styles.list}
-        onEndReached={loadMore}
+        onEndReached={tab === 'all' ? loadMore : undefined}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={renderFooter}
+        ListFooterComponent={tab === 'all' ? renderFooter : undefined}
         refreshing={loading}
         onRefresh={refresh}
         ListEmptyComponent={
@@ -115,7 +145,7 @@ export const HomeScreen = () => {
         buttonStyle={styles.addButton}
         containerStyle={styles.addButtonContainer}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
