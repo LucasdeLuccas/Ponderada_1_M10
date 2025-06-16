@@ -2,6 +2,10 @@
 
 Aplicativo mobile desenvolvido em React Native para venda de artigos de futebol, com foco em torcedores de times brasileiros (especialmente Palmeiras) e times europeus.
 
+## Vídeo de Demonstração
+
+📺 [Assista ao vídeo no YouTube](https://youtu.be/UzvZsdXXfUs)
+
 ## 🚀 Funcionalidades
 
 - 🔐 Autenticação completa (Login, Cadastro, Reset de Senha com OTP)
@@ -103,11 +107,6 @@ src/
   ├── types/         # Definições de tipos TypeScript
   └── utils/         # Funções utilitárias
 ```
-
-## Vídeo de Demonstração
-
-📺 [Assista ao vídeo no YouTube](https://youtu.be/UzvZsdXXfUs)
-
 
 ## 🤝 Contribuição
 
