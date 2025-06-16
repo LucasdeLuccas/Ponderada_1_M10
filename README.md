@@ -104,6 +104,11 @@ src/
   └── utils/         # Funções utilitárias
 ```
 
+## Vídeo de Demonstração
+
+📺 [Assista ao vídeo no YouTube](https://youtu.be/UzvZsdXXfUs)
+
+
 ## 🤝 Contribuição
 
 1. Faça um Fork do projeto
